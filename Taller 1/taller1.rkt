@@ -1,5 +1,17 @@
 #lang eopl
 
+;; ==========================================================================
+;;|                                                                          |
+;;|FUNDAMENTOS DE INTERPRETACIÓN Y COMPILACIÓN DE LENGUAJES DE PROGRAMACIÓN  |
+;;|TALLER 1: Definición recursiva de programas e inducción                   |
+;;|                                                                          |
+;;|INTREGANTES:                                                              |
+;;|SANTIAGO DUQUE CHACÓN - 2180099                                           |    
+;;|DEIBY ALEXANDER RODRIGUEZ RODALLEGA - 184917                              |
+;;|VALENTINA SALAMANCA RODRIGUEZ - 1842427                                   |
+;;|                                                                          |
+;; =========================================================================
+
 ;; Punto 1
 ;; invert :
 ;; Proposito:
