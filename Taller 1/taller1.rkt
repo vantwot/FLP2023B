@@ -75,4 +75,16 @@
         (if (P (car L))
             (cons (car L) (filter-in P (cdr L)))
             (filter-in P (cdr L))))))
+
+;; PUNTO 11
+;; zip :
+;; Proposito:
+;; F * L1 * L2 -> L' : Procedimiento que aplica la función F sobre
+;;los elementos en la posición n-ésima en L1 y L2.
+
+(define zip
+  (lambda (F L1 L2)
+    (if (null? L1)
+        '()
+        (cons (F (car L1) (car L2))(zip F (cdr L1) (cdr L2))))))
       
