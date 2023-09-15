@@ -119,10 +119,11 @@
 ;; list-index :
 ;; Proposito:
 ;; P * L -> N : funcíon retorna (desde una posicíon inicial 0)
-;; el primer elemento de la lista que satisface el predicado L.
+;; el primer elemento de la lista que satisface el predicado P.
 ;; Retornar #f en caso que no se satisfaga el predicado.
 ;;
-;; <predicado-exp> ::= <valor-de-scheme>
+;; <predicado-exp>  := (<identificador>)
+;;                  := (<identificador> <predicado-exp>)
 ;; <lista> := ()
 ;;         := (<valor-de-scheme> <lista>)
 
