@@ -409,8 +409,6 @@
                       ())
                   (31 () ()))))
 
-
-
 ;; PUNTO 15
 ;; count-odd-and-even arbol :
 ;; Proposito: 
@@ -418,25 +416,25 @@
 ;; de un arbol.
 ;;
 ;;<tree> := (tree) empty
-;;       := (nodo) número <tree> <tree>  
+;;       := (nodo) número <tree> <tree>
+;;<aux-count> ::= (lambda (<tree>) <condicionales>)
 
 (define count-odd-and-even
   (lambda (tree)
-    (define aux
+    (define aux-count
       (lambda (tree)
         (cond
           ((null? tree) '(0 0)) 
           ((pair? tree)
-           (let ((lc (aux (car tree)))
-                 (rc (aux (cdr tree))))
+           (let ((lc (aux-count (car tree)))
+                 (rc (aux-count (cdr tree))))
              (list (+ (car lc) (car rc))
                    (+ (cadr lc) (cadr rc)))))
           ((even? tree) '(1 0)) 
           ((odd? tree) '(0 1))
           (else (eopl:error "Invalido")))))
-    (aux tree)))
+    (aux-count tree)))    
           
-
 ; Pruebas
 (count-odd-and-even '(14 (7 () (12 () ())) (26 (20 (17 () ()) ()) (31 () ()))))
 (count-odd-and-even '(14 (7 () (12 () ())) (26 (20 (17 () ()) ()) (32 () ()))))
