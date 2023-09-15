@@ -343,27 +343,25 @@
 (filter-acum 4 20 * 1 even?)
 (filter-acum 1 5 expt 1 odd?)
 
-
 ;; PUNTO 13
 ;; operate :
 ;; Proposito:
-;; L * L -> L' : La funcíon retorna el resultado de aplicar
-;; sucesivamente las operaciones en lrators a los valores en lrands.
+;; L * L -> L' : La funcíon retorna el resultado de aplicar
+;; sucesivamente las operaciones en lrators de longitud N a los valores en lrands de longitud N+1.
 ;;
 ;; <lista> := ()
 ;;         := (<valor-de-scheme> <lista>)
 
 (define operate
   (lambda (lrators lrands)
-    (if (null? lrators)
-        (car lrands)
-        ((car lrators) (car lrands) (operate (cdr lrators) (cdr lrands))))))
+    (cond
+       [(null? (cdr lrands)) (car lrands)]
+       [else (operate (cdr lrators) (cons ((car lrators) (car lrands) (cadr lrands)) (cddr lrands)))])))
 
 ;; Pruebas
 (operate (list + * + - *) '(1 2 8 4 11 6))
 (operate (list *) '(4 5))
 (operate (list + * * * *) '(1 1 1 1 2 3))
-
 
 ;; 14. path
 ;; Proposito:
