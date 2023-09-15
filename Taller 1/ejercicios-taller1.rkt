@@ -185,6 +185,10 @@
               (cons E1 (swapper E1 E2 (cdr L)))
               (cons (car L) (swapper E1 E2 (cdr L))))))))
 
+;; Prueba
+(swapper 'a 'd '(a b c d))
+(swapper 'a 'd '(a d () c d))
+(swapper 'x 'y '(y y x y x y x x y))
 
 ;; 7. cartesian-product
 ;; Proposito:
