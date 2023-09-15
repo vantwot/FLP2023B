@@ -58,6 +58,7 @@
 (invert '((5 9) (10 91) (82 7) (a e) ("hola" "Mundo")))
 (invert '(("es" "racket") ("genial" "muy") (17 29) (81 o)))
 
+
 ;; PUNTO 2
 ;; down :
 ;; Proposito:
@@ -79,14 +80,16 @@
 (down '((una) (buena) (idea)))
 (down '(un (objeto (mas)) complicado))
 
-;; PUNTO 3
-;; list-set :
+
+;; 3. list-set :
 ;; Proposito:
 ;; L * n * x -> L’ : Procedimiento que cambia el elemento
 ;; de la posicion n, de la lista L, por el elemento x
 ;;
 ;; <lista> := ()
 ;; := (<valor-de-scheme> <lista>)
+;;
+;; <elemento> := <scheme-value>
 
 ;; > (list-set ’(a b c d) 2 ’(1 2))
 ;; (a b (1 2) d)
@@ -99,14 +102,26 @@
         '()
         (if (eqv? n 0)
             (cons x (cdr L))
-            (cons (car L) (list-set (cdr L) (- n 1) x)
-                  )
-            )
-        )
-    )
-  )
+            (cons (car L) (list-set (cdr L) (- n 1) x))))))
 
-;;PUNTO 4
+;; Pruebas
+(list-set '(a b c d) 2 '(1 2))
+(list-set '(a b c d) 3 '(1 5 10))
+(list-set '(f i c l p) 0 'fundamentos)
+(list-set '(esta es una lista) 3 '(lista '(con listas)))
+
+
+;; 4. filter-in :
+;; P * L -> L' : Procedimiento que toma un predicado y
+;; una lista. Retorna otra lista donde sus elementos son
+;; aquellos presentes en la lista L que recibe, pero que
+;; cumplen con el predicado P.
+;;
+;; <pred> := <identificador>
+;;        := (<identificador> <lista-args>)
+;; <lista-args> := empty
+;;              := <scheme-value> <lista-args>
+
 (define filter-in
   (lambda (P L)
     (if (null? L)
@@ -114,6 +129,14 @@
         (if (P (car L))
             (cons (car L) (filter-in P (cdr L)))
             (filter-in P (cdr L))))))
+
+;; Pruebas
+(filter-in number? '(a 2 (1 3) b 7))
+(filter-in symbol? '(a (b c) 17 foo))
+(filter-in string? '(a b u "univalle" "racket" "flp" 28 90 (1 2 3)))
+(filter-in symbol? '((palabra) 3 (4 5) #t '(una oracion)))
+(filter-in boolean? '(0 1 verdadero #f true?))
+
 
 ;; PUNTO 5
 ;; list-index :
@@ -161,6 +184,33 @@
           (if (eqv? E2 (car L))
               (cons E1 (swapper E1 E2 (cdr L)))
               (cons (car L) (swapper E1 E2 (cdr L))))))))
+
+
+;; 7. cartesian-product
+;; Proposito:
+;; L1 * L2 -> L' : Procedimiento que toma 2 listas de
+;; simbolos y devuelve una lista de tuplas que
+;; representa el producto cartesiano entre ellas
+;;
+;; <lista-simbolos> ::= ()
+;;              ::= (<scheme-value> <lista-simbolos>)
+
+(define cartesian-product
+  (lambda (L1 L2)
+    (cond
+      ((null? L1) '())
+      ((null? L2) '())
+      (else
+       (cons (cons (car L1) (list (car L2)))
+             (append (cartesian-product (list (car L1)) (cdr L2))
+                     (cartesian-product (cdr L1) L2)))))))
+
+;; Pruebas
+(cartesian-product '(a b c) '(x y))
+(cartesian-product '(p q r) '(5 6 7))
+(cartesian-product '(racket java python) '(FPFC FPOO FPI))
+(cartesian-product '(sistemas ciencias) '(3743 E20))
+
 
 ;;PUNTO 8
 ;; mapping : 
@@ -250,7 +300,43 @@
     (if (null? L1)
         '()
         (cons (F (car L1) (car L2))(zip F (cdr L1) (cdr L2))))))
-      
+
+
+;; 12. filter-acum
+;; Proposito:
+;; a * b * F * acum * filter -> n : Procedimiento que aplica
+;; la funcion binaria F a los numeros en [a,b] y que cumplan
+;; el predicado de la funcion filter; el resultado se va
+;; guardando en acum y se retorna este valor final
+;;
+;; <func-bin> := <identificador>
+;;            := (<identificador> <numero> <numero>)
+;;
+;; <pred> := <identificador>
+;;        := (<identificador> <lista-args>)
+;; <lista-args> := empty
+;;              := <scheme-value> <lista-args>
+
+(define filter-acum
+  (lambda (a b F acum filter)
+    (cond
+      ((eqv? a b)
+       (if (filter a)
+           (F a acum)
+           acum))
+      ((not (filter a))
+       (filter-acum (+ a 1) b F acum filter))
+      (else
+       (filter-acum (+ a 1) b F (F a acum) filter)))))
+
+;; Pruebas
+(filter-acum 1 10 + 0 odd?)
+(filter-acum 1 10 + 0 even?)
+(filter-acum 1 10 * 1 number?)
+(filter-acum 4 20 * 1 even?)
+(filter-acum 1 5 expt 1 odd?)
+
+
 ;; PUNTO 13
 ;; operate :
 ;; Proposito:
@@ -270,6 +356,60 @@
 (operate (list + * + - *) '(1 2 8 4 11 6))
 (operate (list *) '(4 5))
 (operate (list + * * * *) '(1 1 1 1 2 3))
+
+
+;; 14. path
+;; Proposito:
+;; n * BST -> L : Funcion que toma un numero n y un
+;; arbol binario de busqueda, representado con listas
+;; y que contenga n. Retorna una lista L que contiene
+;; las cadenas 'right' o 'left', que indican la ruta
+;; para llegar al numero n. Si n es la raiz devuelve
+;; una lista vacia.
+;;
+;; <arbol-binario> := (arbol-vacio) empty
+;;                  := (nodo) numero <arbol-binario> <arbol-binario>
+
+;; NOTA IMPORTANTE: Se asume que el numero SIEMPRE ESTA en el arbol
+
+(define path
+  (lambda (n BST)
+    (cond
+      ((null? BST) (eopl:error "Arbol vacio"))
+;      ((and (null? (cadr BST)) (null? (caddr BST)))
+;       '())
+      ((eqv? (car BST) n) '()) 
+      ((< n (car BST))
+       (cons 'left (path n (cadr BST))))
+      ((> n (car BST))
+       (cons 'right (path n (caddr BST))))
+      (else
+       (eopl:error "Uso incorrecto de la funcion")))))
+                        
+    
+;; Pruebas
+(path 17 '(14 (7 () (12 () ()))
+              (26 (20 (17 () ())
+                      ())
+                  (31 () ()))))
+(path 20 '(14 (7 () (12 () ()))
+              (26 (20 (17 () ())
+                      ())
+                  (31 () ()))))
+(path 31 '(14 (7 () (12 () ()))
+              (26 (20 (17 () ())
+                      ())
+                  (31 () ()))))
+(path 13 '(14 (7 (12 () ()) (13 () ()))
+              (26 (20 (17 () ())
+                      ())
+                  (31 () ()))))
+(path 14 '(14 (7 (12 () ()) (13 () ()))
+              (26 (20 (17 () ())
+                      ())
+                  (31 () ()))))
+
+
 
 ;; PUNTO 15
 ;; count-odd-and-even arbol :
@@ -337,6 +477,64 @@
 (Operar-binarias '((2 multiplica 3) suma (5 resta 1)))
 (Operar-binarias'((2 multiplica (4 suma 1))
                   multiplica((2 multiplica 4) resta 1 )))
+
+
+;; 17. prod-scalar-matriz
+;; Proposito:
+;; mat * vec -> vecr : Procedimiento que toma una matriz mat
+;; que se representa como una lista de listas y un vector vec
+;; que es una lista de numeros. Retorna la matriz resultante
+;; de multiplicar la matriz por el vector (se hace producto
+;; de cada elemento en una fila con el elemento de mismo indice
+;; en el vector) así: ((a,b) (c,d))*(e,f)=((ae,bf) (ce,df))
+;;
+;; <matriz> := (matriz-vacia) empty
+;;          := (fila) <lista-de-numeros> <matriz>
+;;       
+;; <lista-de-numeros> := () empty
+;;                    := numero <lista-de-numeros>
+;;
+;; No se incluye la gramatica de un vector, pues este es una
+;; lista de numeros.
+
+
+;; auxFila
+;; Proposito:
+;; a * b -> c : Procedimiento auxiliar para la el producto
+;; de matriz por vector. Toma dos listas a y b, y retorna
+;; la lista c que se construye asi:
+;;    c = (a1*b1, a2*b2, ... , a_*b_)
+;;
+;; <lista-de-numeros> := () empty
+;;                    := numero <lista-de-numeros>
+
+(define auxFila
+  (lambda (a b)
+    (if (or (null? a) (null? b))
+        '()
+        (cons (* (car a) (car b))
+              (auxFila (cdr a) (cdr b))))))
+
+;; Pruebas
+(auxFila '(1 1) '(2 3))
+(auxFila '(2 2) '(2 3))
+(auxFila '(1 3 5 7 9) '(2 4 6 8 10))
+
+
+(define prod-scalar-matriz
+  (lambda (mat vec)
+    (cond
+      ((or (null? mat) (null? vec)) '())
+      (else
+       (cons (auxFila (car mat) vec)
+             (prod-scalar-matriz (cdr mat) vec))))))
+
+;; Pruebas
+(prod-scalar-matriz '((1 1) (2 2)) '(2 3))
+(prod-scalar-matriz '((1 1) (2 2) (3 3)) '(2 3))
+(prod-scalar-matriz '((1 2 3) (2 2 2) (9 8 7)) '(4 2 10))
+(prod-scalar-matriz '((1 2 3) (2 2 2) (9 8 7) (15 10 5)) '(4 2 10))
+
 
 ;; PUNTO 18
 ;; pascal :
