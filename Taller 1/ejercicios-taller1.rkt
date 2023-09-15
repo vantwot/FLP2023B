@@ -305,6 +305,9 @@
         '()
         (cons (F (car L1) (car L2))(zip F (cdr L1) (cdr L2))))))
 
+;; Pruebas
+(zip + '(1 4) '(6 2))
+(zip * '(11 5 6) '(10 9 8))
 
 ;; 12. filter-acum
 ;; Proposito:
